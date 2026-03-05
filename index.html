@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel for Business Analytics – MIS171</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #16a34a;
+    --green-light: #bbf7d0;
+    --green-dark: #14532d;
+    --teal: #0d9488;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --bg: #f0fdf4;
+    --surface: #ffffff;
+    --border: #d1fae5;
+    --text: #1a1a1a;
+    --muted: #6b7280;
+    --excel-green: #217346;
+    --excel-row: #e8f5e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--excel-green);
+    color: white;
+    padding: 2rem 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -60px;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: 40%;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .header-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.15);
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.6rem;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+  }
+  header p {
+    opacity: 0.8;
+    font-size: 0.95rem;
+    font-weight: 300;
+  }
+
+  /* NAV TABS */
+  nav {
+    background: white;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+    gap: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  nav::-webkit-scrollbar { height: 0; }
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0.85rem 1.2rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--muted);
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .tab-btn:hover { color: var(--excel-green); background: var(--bg); }
+  .tab-btn.active { color: var(--excel-green); border-bottom-color: var(--excel-green); font-weight: 600; }
+  .tab-num {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--excel-green);
+    color: white;
+    font-size: 0.65rem;
+    font-family: 'DM Mono', monospace;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+  .tab-btn.active .tab-num { opacity: 1; }
+
+  /* SECTIONS */
+  .section { display: none; padding: 1.5rem; max-width: 860px; margin: 0 auto; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--excel-green);
+    margin-bottom: 0.3rem;
+  }
+  .section-sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.4rem;
+    font-weight: 300;
+  }
+
+  /* CARDS */
+  .card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  /* FAKE EXCEL SPREADSHEET */
+  .excel-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #aaa;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+  }
+  .excel-titlebar {
+    background: #f3f3f3;
+    border-bottom: 1px solid #ccc;
+    padding: 0.4rem 0.8rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .excel-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .excel-ribbon {
+    background: var(--excel-green);
+    padding: 0.35rem 0.8rem;
+    display: flex;
+    gap: 1.2rem;
+  }
+  .ribbon-tab {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.72rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+  }
+  .ribbon-tab.active-rt { background: rgba(255,255,255,0.2); color: white; }
+  .excel-grid {
+    overflow-x: auto;
+    background: white;
+  }
+  table.spreadsheet {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+  }
+  table.spreadsheet th {
+    background: #e8e8e8;
+    border: 1px solid #ccc;
+    padding: 0.3rem 0.6rem;
+    text-align: center;
+    font-weight: 500;
+    color: #555;
+    min-width: 80px;
+  }
+  table.spreadsheet th.row-header { min-width: 36px; background: #e8e8e8; }
+  table.spreadsheet td {
+    border: 1px solid #ddd;
+    padding: 0.28rem 0.5rem;
+    white-space: nowrap;
+  }
+  table.spreadsheet td.row-num {
+    background: #e8e8e8;
+    text-align: center;
+    color: #666;
+    font-size: 0.68rem;
+  }
+  .cell-header { background: var(--excel-green) !important; color: white !important; font-weight: 600; }
+  .cell-highlight { background: #fff3cd !important; }
+  .cell-selected { background: #c8e6c9 !important; outline: 2px solid var(--excel-green); }
+  .cell-formula { background: #e3f2fd !important; font-style: italic; color: #1565c0; }
+
+  /* LABELS / CALLOUTS */
+  .callout {
+    border-left: 4px solid var(--excel-green);
+    background: var(--green-light);
+    padding: 0.7rem 1rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .callout.amber { border-left-color: var(--amber); background: var(--amber-light); }
+  .callout.red { border-left-color: var(--red); background: var(--red-light); }
+  .callout strong { font-weight: 600; }
+
+  /* FORMULA BAR */
+  .formula-bar {
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 0.3rem 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+  }
+  .cell-ref {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    min-width: 50px;
+    text-align: center;
+    color: #333;
+  }
+  .formula-input {
+    flex: 1;
+    color: #1565c0;
+    font-style: italic;
+  }
+
+  /* QUIZ */
+  .quiz-card {
+    background: white;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    padding: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+  .quiz-q {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  .quiz-options { display: grid; gap: 0.5rem; }
+  .quiz-opt {
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: white;
+  }
+  .quiz-opt:hover { border-color: var(--excel-green); background: var(--bg); }
+  .quiz-opt.correct { border-color: var(--green); background: var(--green-light); }
+  .quiz-opt.wrong { border-color: var(--red); background: var(--red-light); }
+  .quiz-opt .opt-label {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 2px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .quiz-feedback {
+    margin-top: 0.7rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--green-light); color: var(--green-dark); }
+  .quiz-feedback.wrong { background: var(--red-light); color: #7f1d1d; }
+
+  /* FILL IN THE BLANK ACTIVITY */
+  .blank-input {
+    border: none;
+    border-bottom: 2px solid var(--excel-green);
+    background: transparent;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    width: 120px;
+    text-align: center;
+    color: var(--excel-green);
+    padding: 0 4px;
+    outline: none;
+  }
+  .blank-input.correct-ans { border-bottom-color: var(--green); color: var(--green); background: var(--green-light); border-radius: 4px 4px 0 0; }
+  .blank-input.wrong-ans { border-bottom-color: var(--red); color: var(--red); background: var(--red-light); border-radius: 4px 4px 0 0; }
+
+  /* DRAG MATCH */
+  .match-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .match-col h4 { font-family: 'Syne', sans-serif; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .match-item {
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    background: white;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+    cursor: grab;
+    transition: all 0.2s;
+    font-family: 'DM Mono', monospace;
+  }
+  .match-item:hover { border-color: var(--excel-green); box-shadow: 0 2px 8px rgba(33,115,70,0.15); }
+  .match-item.dragging { opacity: 0.4; }
+  .drop-zone {
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    border: 2px dashed #ccc;
+    background: #fafafa;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+    min-height: 42px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .drop-zone.drag-over { border-color: var(--excel-green); background: var(--green-light); }
+  .drop-zone.matched-ok { border-color: var(--green); border-style: solid; background: var(--green-light); }
+  .drop-zone.matched-wrong { border-color: var(--red); border-style: solid; background: var(--red-light); }
+  .drop-label { color: var(--muted); font-size: 0.8rem; font-family: 'DM Sans', sans-serif; }
+
+  /* FORMULA BUILDER */
+  .formula-builder {
+    background: #1e1e1e;
+    border-radius: 10px;
+    padding: 1.2rem;
+    color: #d4d4d4;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  .fb-prompt { color: #9cdcfe; margin-bottom: 0.8rem; }
+  .fb-display {
+    background: #2d2d2d;
+    border-radius: 6px;
+    padding: 0.7rem 1rem;
+    min-height: 42px;
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    color: #ce9178;
+    letter-spacing: 0.03em;
+  }
+  .fb-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .fb-chip {
+    background: #3a3d41;
+    border: 1px solid #555;
+    color: #d4d4d4;
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+    font-family: 'DM Mono', monospace;
+  }
+  .fb-chip:hover { background: #4ec9b0; color: #1e1e1e; border-color: #4ec9b0; }
+  .fb-chip.keyword { color: #569cd6; }
+  .fb-chip.func { color: #dcdcaa; }
+  .fb-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+  .fb-btn {
+    padding: 0.4rem 0.9rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .fb-btn.check { background: #4ec9b0; color: #1e1e1e; }
+  .fb-btn.clear { background: #555; color: #d4d4d4; }
+  .fb-btn:hover { opacity: 0.85; }
+  .fb-result { margin-top: 0.7rem; padding: 0.5rem 0.8rem; border-radius: 5px; font-size: 0.82rem; display: none; }
+  .fb-result.ok { background: #1a3a2a; color: #4ec9b0; display: block; }
+  .fb-result.bad { background: #3a1a1a; color: #f48771; display: block; }
+
+  /* PROGRESS */
+  .progress-bar-wrap { height: 6px; background: var(--border); border-radius: 3px; margin-bottom: 1.4rem; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--excel-green); border-radius: 3px; transition: width 0.4s ease; }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.88rem;
+    transition: all 0.18s;
+    text-decoration: none;
+  }
+  .btn-green { background: var(--excel-green); color: white; }
+  .btn-green:hover { background: var(--green-dark); }
+  .btn-outline { background: white; color: var(--excel-green); border: 2px solid var(--excel-green); }
+  .btn-outline:hover { background: var(--bg); }
+  .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 6px; }
+
+  /* REF BADGES */
+  .ref-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+  .ref-rel { background: #dbeafe; color: #1d4ed8; }
+  .ref-abs { background: #fce7f3; color: #9d174d; }
+  .ref-mix { background: #fef9c3; color: #713f12; }
+
+  /* FUNCTION CARDS */
+  .fn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.7rem; margin-bottom: 1rem; }
+  .fn-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .fn-card:hover { border-color: var(--excel-green); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(33,115,70,0.12); }
+  .fn-name { font-family: 'DM Mono', monospace; font-weight: 500; color: var(--excel-green); font-size: 0.9rem; margin-bottom: 0.3rem; }
+  .fn-desc { font-size: 0.78rem; color: var(--muted); }
+  .fn-example { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: #1565c0; margin-top: 0.3rem; background: #e3f2fd; padding: 0.2rem 0.4rem; border-radius: 4px; display: inline-block; }
+
+  /* TOOLTIP modal */
+  .fn-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; align-items: center; justify-content: center; }
+  .fn-modal.show { display: flex; }
+  .fn-modal-box {
+    background: white;
+    border-radius: 16px;
+    padding: 1.8rem;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+  .fn-modal-name { font-family: 'DM Mono', monospace; color: var(--excel-green); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .fn-modal-syntax { font-family: 'DM Mono', monospace; font-size: 0.82rem; background: #f0fdf4; padding: 0.5rem 0.8rem; border-radius: 6px; margin-bottom: 0.8rem; color: #1565c0; }
+  .fn-modal-close { float: right; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); margin-top: -0.5rem; }
+
+  /* SCENARIO */
+  .scenario-box {
+    background: linear-gradient(135deg, #e8f5e9, #f0fdf4);
+    border: 2px solid var(--green-light);
+    border-radius: 12px;
+    padding: 1.3rem;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .scenario-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+  .scenario-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 0.4rem; }
+
+  /* STEPS */
+  .steps { counter-reset: step; }
+  .step-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--excel-green);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body { font-size: 0.9rem; line-height: 1.6; }
+  .step-body code {
+    background: #f0fdf4;
+    border: 1px solid var(--green-light);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--excel-green);
+  }
+
+  /* SCORE */
+  .score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--excel-green);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    float: right;
+    margin-top: -2.5rem;
+  }
+
+  @media (max-width: 600px) {
+    .match-container { grid-template-columns: 1fr; }
+    .fn-grid { grid-template-columns: 1fr 1fr; }
+    header { padding: 1.5rem 1rem 1rem; }
+    .section { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">MIS171 · Week 1 · Business Analytics</div>
+  <h1>📊 Introduction to Excel</h1>
+  <p>An interactive guide for first-year business students</p>
+</header>
+
+<nav id="mainNav">
+  <button class="tab-btn active" onclick="showTab(0)"><span class="tab-num">1</span> Why Excel?</button>
+  <button class="tab-btn" onclick="showTab(1)"><span class="tab-num">2</span> Datasets</button>
+  <button class="tab-btn" onclick="showTab(2)"><span class="tab-num">3</span> References</button>
+  <button class="tab-btn" onclick="showTab(3)"><span class="tab-num">4</span> Functions</button>
+  <button class="tab-btn" onclick="showTab(4)"><span class="tab-num">5</span> Quick Quiz</button>
+</nav>
+
+<!-- ===== TAB 1: WHY EXCEL ===== -->
+<div class="section active" id="tab0">
+  <p class="section-title">Why Spreadsheets?</p>
+  <p class="section-sub">Before we dive in — why are we even learning Excel in a Business Analytics course?</p>
+
+  <div class="scenario-box">
+    <div class="scenario-emoji">🏢</div>
+    <div class="scenario-title">Meet DeskPlace Pty Ltd</div>
+    <p style="font-size:0.9rem;line-height:1.6">DeskPlace is a furniture company that has collected data on 200 employees — their performance, salary, satisfaction, and more. <strong>Your job this trimester:</strong> use Excel to help them make smarter business decisions.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-icon">🌐</span> Excel is everywhere in business</div>
+    <p style="font-size:0.9rem;line-height:1.6;margin-bottom:0.8rem">Click each card to reveal why companies use Excel:</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.6rem">
+      <div class="why-flip" onclick="flipCard(this)" style="cursor:pointer;border-radius:10px;overflow:hidden;min-height:80px;background:var(--excel-green);display:flex;align-items:center;justify-content:center;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;text-align:center;padding:0.8rem;transition:all 0.3s" data-back="Accountants use Excel for budgets, payroll and financial models — often 1000s of rows of data.">📈 Finance</div>
+      <div class="why-flip" onclick="flipCard(this)" style="cursor:pointer;border-radius:10px;overflow:hidden;min-height:80px;background:var(--teal);display:flex;align-items:center;justify-content:center;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;text-align:center;padding:0.8rem;transition:all 0.3s" data-back="HR teams track employee data, performance scores, leave balances — just like DeskPlace!">👥 HR</div>
+      <div class="why-flip" onclick="flipCard(this)" style="cursor:pointer;border-radius:10px;overflow:hidden;min-height:80px;background:var(--amber);display:flex;align-items:center;justify-content:center;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;text-align:center;padding:0.8rem;transition:all 0.3s" data-back="Marketers analyse customer data, campaign results, and sales trends in Excel.">📣 Marketing</div>
+      <div class="why-flip" onclick="flipCard(this)" style="cursor:pointer;border-radius:10px;overflow:hidden;min-height:80px;background:#7c3aed;display:flex;align-items:center;justify-content:center;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;text-align:center;padding:0.8rem;transition:all 0.3s" data-back="Supply chain managers use Excel to track inventory, orders and logistics across locations.">🚚 Operations</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>💡 Key takeaway:</strong> Excel is used in <em>every</em> business function. The skills you learn here will be immediately useful in internships and graduate roles.
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-icon">💬</span> Discussion Starter</div>
+    <p style="font-size:0.9rem;line-height:1.6;margin-bottom:0.8rem">Turn to the person next to you and answer in 60 seconds:</p>
+    <div style="background:var(--bg);border-radius:8px;padding:1rem;font-size:0.9rem;line-height:1.7;border:1px solid var(--border)">
+      🤔 <strong>"Can you think of a real company that used data to make a better decision?"</strong><br>
+      <span style="color:var(--muted);font-size:0.82rem">Think: Netflix recommendations, Spotify Wrapped, Woolworths loyalty card data...</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 2: DATASETS ===== -->
+<div class="section" id="tab1">
+  <p class="section-title">Understanding a Dataset</p>
+  <p class="section-sub">Before doing any analysis, you need to understand what you're looking at. Hover over any highlighted cell!</p>
+
+  <div class="excel-wrap">
+    <div class="excel-titlebar">
+      <div class="excel-dot" style="background:#ff5f56"></div>
+      <div class="excel-dot" style="background:#ffbd2e"></div>
+      <div class="excel-dot" style="background:#27c93f"></div>
+      &nbsp; DeskPlace_EmployeeSurvey.xlsx
+    </div>
+    <div class="excel-ribbon">
+      <span class="ribbon-tab active-rt">Home</span>
+      <span class="ribbon-tab">Insert</span>
+      <span class="ribbon-tab">Formulas</span>
+      <span class="ribbon-tab">Data</span>
+    </div>
+    <div class="formula-bar">
+      <span class="cell-ref" id="cellRef">A1</span>
+      <span style="color:#999">fx</span>
+      <span class="formula-input" id="cellContent">Employee</span>
+    </div>
+    <div class="excel-grid">
+      <table class="spreadsheet" id="demoTable">
+        <thead>
+          <tr>
+            <th class="row-header"></th>
+            <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th>
+          </tr>
+        </thead>
+        <tbody id="spreadsheetBody">
+          <!-- JS fills this -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="cellInfo" class="callout" style="display:none"></div>
+
+  <!-- LABEL ACTIVITY -->
+  <div class="card">
+    <div class="card-title"><span class="card-icon">✏️</span> Label the Parts — Fill in the Blanks</div>
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:1rem">Type the correct term: <em>Row, Column, Heading, Data, Variable, Record</em></p>
+    <div style="display:grid;gap:0.6rem;font-size:0.9rem;line-height:2">
+      <div>A single employee's full information (Employee 7, Female, Management…) is one <input class="blank-input" id="b1" placeholder="?"> in the dataset.</div>
+      <div>The <input class="blank-input" id="b2" placeholder="?"> "DysAbsnt" tells us how many sick days each employee took.</div>
+      <div>All employees are listed down the left — each is a separate <input class="blank-input" id="b3" placeholder="?">.</div>
+      <div>The label "Gender" at the top of column B is a <input class="blank-input" id="b4" placeholder="?">.</div>
+    </div>
+    <div style="margin-top:0.9rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+      <button class="btn btn-green btn-sm" onclick="checkBlanks()">✓ Check Answers</button>
+      <button class="btn btn-outline btn-sm" onclick="resetBlanks()">↺ Reset</button>
+    </div>
+    <div id="blanksResult" style="margin-top:0.7rem;display:none;font-size:0.88rem;padding:0.6rem;border-radius:6px"></div>
+  </div>
+</div>
+
+<!-- ===== TAB 3: REFERENCES ===== -->
+<div class="section" id="tab2">
+  <p class="section-title">Relative vs Absolute References</p>
+  <p class="section-sub">This is one of the most important (and most confused!) Excel concepts. Let's make it click.</p>
+
+  <div class="callout amber">
+    <strong>⚠️ Most common beginner mistake:</strong> Copying a formula without locking the right cells — causing all your answers to go wrong!
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-icon">📍</span> The $ Sign Explained</div>
+    <div style="display:grid;gap:0.8rem;margin-top:0.5rem">
+      <div style="display:flex;align-items:center;gap:1rem;padding:0.7rem;background:var(--bg);border-radius:8px">
+        <span class="ref-badge ref-rel">A2</span>
+        <div>
+          <div style="font-weight:600;font-size:0.88rem">Relative Reference</div>
+          <div style="font-size:0.82rem;color:var(--muted)">Moves with the formula when copied. Like giving directions: "Go 2 blocks right."</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;padding:0.7rem;background:var(--bg);border-radius:8px">
+        <span class="ref-badge ref-abs">$B$4</span>
+        <div>
+          <div style="font-weight:600;font-size:0.88rem">Absolute Reference</div>
+          <div style="font-size:0.82rem;color:var(--muted)">Locked — never moves. Like a GPS coordinate: "Always go to 217 King St."</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;padding:0.7rem;background:var(--bg);border-radius:8px">
+        <span class="ref-badge ref-mix">$B4 or B$4</span>
+        <div>
+          <div style="font-weight:600;font-size:0.88rem">Mixed Reference</div>
+          <div style="font-size:0.82rem;color:var(--muted)">One part locked, one part free. $B4 locks column B; B$4 locks row 4.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAG & MATCH ACTIVITY -->
+  <div class="card">
+    <div class="card-title"><span class="card-icon">🎯</span> Drag & Match Activity</div>
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:1rem">Drag each reference type to the correct description.</p>
+    <div class="match-container">
+      <div class="match-col">
+        <h4>References</h4>
+        <div class="match-item" draggable="true" data-val="A1" ondragstart="dragStart(event)"><span class="ref-badge ref-rel">A1</span></div>
+        <div class="match-item" draggable="true" data-val="$A$1" ondragstart="dragStart(event)"><span class="ref-badge ref-abs">$A$1</span></div>
+        <div class="match-item" draggable="true" data-val="$A1" ondragstart="dragStart(event)"><span class="ref-badge ref-mix">$A1</span></div>
+        <div class="match-item" draggable="true" data-val="A$1" ondragstart="dragStart(event)"><span class="ref-badge ref-mix">A$1</span></div>
+      </div>
+      <div class="match-col">
+        <h4>Description</h4>
+        <div class="drop-zone" data-answer="$A$1" ondragover="allowDrop(event)" ondrop="dropItem(event)">
+          <span class="drop-label">🔒 Both row and column are locked</span>
+        </div>
+        <div class="drop-zone" data-answer="A1" ondragover="allowDrop(event)" ondrop="dropItem(event)">
+          <span class="drop-label">🔓 Neither row nor column is locked</span>
+        </div>
+        <div class="drop-zone" data-answer="$A1" ondragover="allowDrop(event)" ondrop="dropItem(event)">
+          <span class="drop-label">🔒 Column locked, row is free</span>
+        </div>
+        <div class="drop-zone" data-answer="A$1" ondragover="allowDrop(event)" ondrop="dropItem(event)">
+          <span class="drop-label">🔒 Row locked, column is free</span>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="resetMatch()">↺ Reset</button>
+  </div>
+
+  <!-- FORMULA BUILDER -->
+  <div class="card">
+    <div class="card-title"><span class="card-icon">🧩</span> Formula Builder Challenge</div>
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:0.8rem">Build this formula: <strong>Calculate the tax (at rate in B1) on the salary in column C</strong> — the tax rate must not move when copied down!</p>
+    <div class="formula-builder">
+      <div class="fb-prompt">// Click tokens to build your formula:</div>
+      <div class="fb-display" id="fbDisplay">=</div>
+      <div class="fb-chips">
+        <span class="fb-chip" onclick="addToken('C2')">C2</span>
+        <span class="fb-chip" onclick="addToken('$C2')">$C2</span>
+        <span class="fb-chip" onclick="addToken('B1')">B1</span>
+        <span class="fb-chip" onclick="addToken('$B$1')">$B$1</span>
+        <span class="fb-chip" onclick="addToken('*')">*</span>
+        <span class="fb-chip" onclick="addToken('+')">+</span>
+        <span class="fb-chip" onclick="addToken('SUM(')">SUM(</span>
+        <span class="fb-chip" onclick="addToken(')')">)</span>
+      </div>
+      <div class="fb-actions">
+        <button class="fb-btn check" onclick="checkFormula()">✓ Check</button>
+        <button class="fb-btn clear" onclick="clearFormula()">✕ Clear</button>
+      </div>
+      <div class="fb-result" id="fbResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 4: FUNCTIONS ===== -->
+<div class="section" id="tab3">
+  <p class="section-title">Essential Excel Functions</p>
+  <p class="section-sub">Click any function card to see its syntax and a DeskPlace example.</p>
+
+  <div class="fn-grid" id="fnGrid">
+    <!-- JS fills this -->
+  </div>
+
+  <div class="card" style="margin-top:1rem">
+    <div class="card-title"><span class="card-icon">🎮</span> Apply It: DeskPlace Scenario</div>
+    <div class="scenario-box" style="margin-bottom:0.8rem">
+      <div class="scenario-title">📋 Your task as HR Analyst</div>
+      <p style="font-size:0.88rem;line-height:1.6">The DeskPlace manager asks: <em>"How many employees in the IT department have a performance score above 80?"</em><br>The data is in columns D (Department) and E (Performance).</p>
+    </div>
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:0.8rem">Which formula would you use?</p>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="pickScenario(this,'wrong')">
+        <span class="opt-label">A</span>
+        <span><code style="font-family:'DM Mono',monospace">=COUNTIF(D2:D201,"IT")</code></span>
+      </div>
+      <div class="quiz-opt" onclick="pickScenario(this,'correct')">
+        <span class="opt-label">B</span>
+        <span><code style="font-family:'DM Mono',monospace">=COUNTIFS(D2:D201,"IT",E2:E201,">80")</code></span>
+      </div>
+      <div class="quiz-opt" onclick="pickScenario(this,'wrong')">
+        <span class="opt-label">C</span>
+        <span><code style="font-family:'DM Mono',monospace">=SUM(D2:D201,"IT")</code></span>
+      </div>
+      <div class="quiz-opt" onclick="pickScenario(this,'wrong')">
+        <span class="opt-label">D</span>
+        <span><code style="font-family:'DM Mono',monospace">=AVERAGE(E2:E201)</code></span>
+      </div>
+    </div>
+    <div class="quiz-feedback" id="scenarioFeedback"></div>
+  </div>
+</div>
+
+<!-- ===== TAB 5: QUIZ ===== -->
+<div class="section" id="tab4">
+  <p class="section-title">Quick Knowledge Check</p>
+  <p class="section-sub">5 questions — let's see what stuck!</p>
+  <div class="score-badge" id="scoreDisplay">0 / 5</div>
+
+  <div id="quizContainer">
+    <!-- JS fills this -->
+  </div>
+
+  <div style="text-align:center;margin-top:1rem">
+    <button class="btn btn-outline" onclick="resetQuiz()">↺ Try Again</button>
+  </div>
+</div>
+
+<!-- FUNCTION MODAL -->
+<div class="fn-modal" id="fnModal" onclick="closeModal(event)">
+  <div class="fn-modal-box">
+    <button class="fn-modal-close" onclick="document.getElementById('fnModal').classList.remove('show')">✕</button>
+    <div class="fn-modal-name" id="modalName"></div>
+    <div class="fn-modal-syntax" id="modalSyntax"></div>
+    <p style="font-size:0.88rem;line-height:1.6;margin-bottom:0.8rem" id="modalDesc"></p>
+    <div style="background:var(--green-light);border-radius:8px;padding:0.8rem;font-size:0.88rem">
+      <strong>🏢 DeskPlace Example:</strong><br>
+      <span id="modalExample" style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--excel-green)"></span><br>
+      <span id="modalExplain" style="color:var(--muted);font-size:0.8rem"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== TAB SWITCHING =====
+function showTab(n) {
+  document.querySelectorAll('.section').forEach((s,i) => s.classList.toggle('active', i===n));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===n));
+}
+
+// ===== FLIP CARDS =====
+function flipCard(el) {
+  const back = el.dataset.back;
+  el.style.fontSize = '0.78rem';
+  el.style.fontFamily = "'DM Sans',sans-serif";
+  el.style.fontWeight = '400';
+  el.style.background = 'white';
+  el.style.color = '#1a1a1a';
+  el.style.border = '2px solid #d1fae5';
+  el.textContent = back;
+  el.onclick = () => {};
+}
+
+// ===== SPREADSHEET =====
+const ssData = [
+  ['Employee','Gender','Position','Department','Performance','Salary'],
+  [1,'Female','Management','Sales',62,72000],
+  [2,'Male','Non-management','Sales',85,48000],
+  [3,'Female','Management','HR',68,75000],
+  [4,'Male','Non-management','Manufacturing',87,45000],
+  [5,'Female','Non-management','IT',95,52000],
+  [6,'Male','Management','Sales',76,80000],
+  [7,'Female','Management','IT',85,78000],
+  [8,'Male','Non-management','HR',77,46000],
+];
+const cellInfo = {
+  'A1': '📌 <strong>Heading (Variable Name)</strong> — Identifies what the column contains. Always in Row 1.',
+  'B1': '📌 <strong>Heading</strong> — "Gender" is a categorical variable with values Male/Female.',
+  'C1': '📌 <strong>Heading</strong> — "Position" tells us whether the employee is in management or not.',
+  'D1': '📌 <strong>Heading</strong> — "Department" groups employees into Sales, HR, IT, Manufacturing.',
+  'E1': '📌 <strong>Heading</strong> — "Performance" is a numeric variable (score 0–100).',
+  'F1': '📌 <strong>Heading</strong> — "Salary" is a numeric variable in Australian dollars.',
+  'A2': '👤 <strong>Record (Row)</strong> — This is the complete data entry for Employee #1.',
+  'A3': '👤 <strong>Record (Row)</strong> — Employee #2\'s full record.',
+  'B2': '📊 <strong>Data</strong> — The actual value. This employee is Female.',
+  'E2': '📊 <strong>Data</strong> — Employee 1 has a performance score of 62.',
+  'F2': '💰 <strong>Data</strong> — Employee 1 earns $72,000 per year.',
+  'E5': '⭐ <strong>Highest score!</strong> — Employee 5 has the top performance score of 95.',
+};
+const body = document.getElementById('spreadsheetBody');
+ssData.forEach((row, ri) => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td class="row-num">${ri+1}</td>`;
+  row.forEach((cell, ci) => {
+    const col = String.fromCharCode(65+ci);
+    const ref = col+(ri+1);
+    const td = document.createElement('td');
+    td.textContent = cell;
+    if (ri===0) td.classList.add('cell-header');
+    if (ref==='E5') td.style.fontWeight='700';
+    td.style.cursor = cellInfo[ref] ? 'pointer' : 'default';
+    td.onclick = () => {
+      document.querySelectorAll('#demoTable td').forEach(t => t.classList.remove('cell-selected'));
+      td.classList.add('cell-selected');
+      document.getElementById('cellRef').textContent = ref;
+      document.getElementById('cellContent').textContent = cell;
+      const info = document.getElementById('cellInfo');
+      if (cellInfo[ref]) {
+        info.innerHTML = cellInfo[ref];
+        info.style.display = 'block';
+      } else { info.style.display='none'; }
+    };
+    tr.appendChild(td);
+  });
+  body.appendChild(tr);
+});
+
+// ===== FILL IN BLANKS =====
+const blanksAnswers = {
+  b1: ['record'],
+  b2: ['column','variable'],
+  b3: ['row'],
+  b4: ['heading','header']
+};
+function checkBlanks() {
+  let correct = 0;
+  ['b1','b2','b3','b4'].forEach(id => {
+    const el = document.getElementById(id);
+    const val = el.value.trim().toLowerCase();
+    const ok = blanksAnswers[id].includes(val);
+    el.classList.toggle('correct-ans', ok);
+    el.classList.toggle('wrong-ans', !ok);
+    if(ok) correct++;
+  });
+  const res = document.getElementById('blanksResult');
+  res.style.display='block';
+  if(correct===4) { res.style.background='#bbf7d0'; res.style.color='#14532d'; res.textContent='🎉 Perfect! All 4 correct!'; }
+  else { res.style.background='#fee2e2'; res.style.color='#7f1d1d'; res.textContent=`${correct}/4 correct. Check the red ones and try again!`; }
+}
+function resetBlanks() {
+  ['b1','b2','b3','b4'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value=''; el.className='blank-input';
+  });
+  document.getElementById('blanksResult').style.display='none';
+}
+
+// ===== DRAG & MATCH =====
+let dragVal = null;
+function dragStart(e) {
+  dragVal = e.currentTarget.dataset.val;
+  e.currentTarget.classList.add('dragging');
+  setTimeout(()=>e.currentTarget.classList.remove('dragging'),0);
+}
+function allowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+document.querySelectorAll('.drop-zone').forEach(dz => {
+  dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+});
+function dropItem(e) {
+  e.preventDefault();
+  const zone = e.currentTarget;
+  zone.classList.remove('drag-over');
+  const answer = zone.dataset.answer;
+  const ok = dragVal === answer;
+  zone.classList.remove('matched-ok','matched-wrong');
+  zone.classList.add(ok ? 'matched-ok' : 'matched-wrong');
+  const existing = zone.querySelector('.match-item');
+  if(existing) existing.remove();
+  const badge = document.createElement('span');
+  badge.className = 'ref-badge ' + (dragVal.includes('$') ? (dragVal.startsWith('$') && dragVal.includes('$',1) ? 'ref-abs' : 'ref-mix') : 'ref-rel');
+  badge.textContent = dragVal;
+  zone.insertBefore(badge, zone.querySelector('.drop-label'));
+}
+function resetMatch() {
+  document.querySelectorAll('.drop-zone').forEach(dz => {
+    dz.classList.remove('matched-ok','matched-wrong');
+    const b = dz.querySelector('.ref-badge');
+    if(b) b.remove();
+  });
+}
+
+// ===== FORMULA BUILDER =====
+let formulaTokens = [];
+function addToken(t) {
+  formulaTokens.push(t);
+  document.getElementById('fbDisplay').textContent = '=' + formulaTokens.join('');
+  document.getElementById('fbResult').className='fb-result';
+}
+function clearFormula() {
+  formulaTokens=[];
+  document.getElementById('fbDisplay').textContent='=';
+  document.getElementById('fbResult').className='fb-result';
+}
+function checkFormula() {
+  const formula = formulaTokens.join('');
+  const res = document.getElementById('fbResult');
+  if(formula==='C2*$B$1') {
+    res.className='fb-result ok';
+    res.textContent='✅ Perfect! C2 moves down each row (relative), $B$1 stays locked on the tax rate.';
+  } else {
+    res.className='fb-result bad';
+    res.textContent='❌ Not quite. Remember: C2 should be relative (moves with each row), but the tax rate in B1 must be locked with $B$1.';
+  }
+}
+
+// ===== FUNCTIONS =====
+const functions = [
+  { name:'=MIN()', syntax:'=MIN(range)', desc:'Returns the smallest value in a range.', example:'=MIN(E2:E201)', explain:'Finds the lowest performance score at DeskPlace.' },
+  { name:'=MAX()', syntax:'=MAX(range)', desc:'Returns the largest value in a range.', example:'=MAX(F2:F201)', explain:'Finds the highest salary paid at DeskPlace.' },
+  { name:'=SUM()', syntax:'=SUM(range)', desc:'Adds up all values in a range.', example:'=SUM(F2:F201)', explain:'Total salary bill for all 200 employees.' },
+  { name:'=AVERAGE()', syntax:'=AVERAGE(range)', desc:'Calculates the arithmetic mean of a range.', example:'=AVERAGE(E2:E201)', explain:'Average performance score across all employees.' },
+  { name:'=COUNT()', syntax:'=COUNT(range)', desc:'Counts numeric cells in a range.', example:'=COUNT(E2:E201)', explain:'How many employees have a recorded performance score.' },
+  { name:'=COUNTIF()', syntax:'=COUNTIF(range, criteria)', desc:'Counts cells that meet a single condition.', example:'=COUNTIF(C2:C201,"Management")', explain:'How many employees are in management positions.' },
+  { name:'=COUNTIFS()', syntax:'=COUNTIFS(range1, criteria1, ...)', desc:'Counts cells that meet multiple conditions.', example:'=COUNTIFS(D2:D201,"IT",E2:E201,">80")', explain:'IT employees with performance score above 80.' },
+  { name:'=IF()', syntax:'=IF(condition, true, false)', desc:'Returns different values depending on whether a condition is true or false.', example:'=IF(E2>=80,"High","Standard")', explain:'Labels employees as "High" or "Standard" performers.' },
+  { name:'=SUMIF()', syntax:'=SUMIF(range, criteria, sum_range)', desc:'Sums values where a condition is met.', example:'=SUMIF(D2:D201,"Sales",F2:F201)', explain:'Total salary paid to the Sales department.' },
+  { name:'=AVERAGEIF()', syntax:'=AVERAGEIF(range, criteria, avg_range)', desc:'Averages values where a condition is met.', example:'=AVERAGEIF(C2:C201,"Management",E2:E201)', explain:'Average performance score for management staff.' },
+];
+const grid = document.getElementById('fnGrid');
+functions.forEach((fn,i) => {
+  const card = document.createElement('div');
+  card.className='fn-card';
+  card.innerHTML=`<div class="fn-name">${fn.name}</div><div class="fn-desc">${fn.desc}</div><span class="fn-example">${fn.example}</span>`;
+  card.onclick = () => {
+    document.getElementById('modalName').textContent = fn.name;
+    document.getElementById('modalSyntax').textContent = fn.syntax;
+    document.getElementById('modalDesc').textContent = fn.desc;
+    document.getElementById('modalExample').textContent = fn.example;
+    document.getElementById('modalExplain').textContent = fn.explain;
+    document.getElementById('fnModal').classList.add('show');
+  };
+  grid.appendChild(card);
+});
+function closeModal(e) { if(e.target.id==='fnModal') e.target.classList.remove('show'); }
+
+// ===== SCENARIO =====
+function pickScenario(el, type) {
+  document.querySelectorAll('#tab3 .quiz-opt').forEach(o => { o.classList.remove('correct','wrong'); });
+  el.classList.add(type);
+  const fb = document.getElementById('scenarioFeedback');
+  fb.classList.add('show');
+  if(type==='correct') {
+    fb.className='quiz-feedback show correct';
+    fb.textContent='✅ Correct! COUNTIFS lets you apply TWO conditions: department = "IT" AND performance > 80. COUNTIF only handles one condition.';
+  } else {
+    fb.className='quiz-feedback show wrong';
+    fb.textContent='❌ Not quite. You need COUNTIFS (plural) when filtering by more than one condition — here: department AND performance score.';
+  }
+}
+
+// ===== QUIZ =====
+const quizData = [
+  {
+    q:'In a dataset, each row represents a...',
+    opts:['Variable','Column','Record','Heading'],
+    correct: 2,
+    explain:'Each row = one complete record (e.g., one employee\'s full data). Each column = one variable.'
+  },
+  {
+    q:'Which formula correctly calculates a 10% bonus from a salary in C3, where the rate is fixed in cell B1?',
+    opts:['=C3*B1','=C3*$B1','=C3*$B$1','=$C$3*B1'],
+    correct: 2,
+    explain:'$B$1 locks BOTH the column and row — the bonus rate never moves no matter where you copy the formula.'
+  },
+  {
+    q:'Which function counts employees ONLY in the Sales department?',
+    opts:['=COUNT(D2:D201)','=COUNTIF(D2:D201,"Sales")','=SUM(D2:D201,"Sales")','=IF(D2="Sales",1,0)'],
+    correct: 1,
+    explain:'COUNTIF(range, criteria) counts cells that match a specific condition — in this case, "Sales".'
+  },
+  {
+    q:'If you want to find the AVERAGE salary of Management staff, which function is best?',
+    opts:['=AVERAGE(F2:F201)','=COUNTIF(C2:C201,"Management",F2:F201)','=AVERAGEIF(C2:C201,"Management",F2:F201)','=SUMIF(C2:C201,"Management")'],
+    correct: 2,
+    explain:'AVERAGEIF(range, criteria, avg_range) calculates the mean of values in avg_range where range meets the criteria.'
+  },
+  {
+    q:'The Excel Ribbon\'s "Formulas" tab is most useful for...',
+    opts:['Changing font size','Printing your spreadsheet','Accessing built-in functions like SUM and AVERAGE','Sorting data from A to Z'],
+    correct: 2,
+    explain:'The Formulas tab gives you quick access to all of Excel\'s built-in functions, organised by category.'
+  },
+];
+let quizScore = 0;
+let quizAnswered = new Array(quizData.length).fill(false);
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  quizData.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-card';
+    const labels = ['A','B','C','D'];
+    div.innerHTML = `
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((o,oi) => `
+          <div class="quiz-opt" onclick="answerQ(${qi},${oi},this)">
+            <span class="opt-label">${labels[oi]}</span>
+            <span>${o}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="quiz-feedback" id="qfb${qi}"></div>
+    `;
+    container.appendChild(div);
+  });
+  updateScore();
+}
+function answerQ(qi, oi, el) {
+  if(quizAnswered[qi]) return;
+  quizAnswered[qi] = true;
+  const opts = el.parentElement.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.style.cursor='default');
+  const correct = quizData[qi].correct;
+  if(oi === correct) { el.classList.add('correct'); quizScore++; } else { el.classList.add('wrong'); opts[correct].classList.add('correct'); }
+  const fb = document.getElementById('qfb'+qi);
+  fb.className = 'quiz-feedback show ' + (oi===correct?'correct':'wrong');
+  fb.textContent = (oi===correct ? '✅ ' : '❌ ') + quizData[qi].explain;
+  updateScore();
+}
+function updateScore() {
+  document.getElementById('scoreDisplay').textContent = `${quizScore} / 5`;
+}
+function resetQuiz() {
+  quizScore=0; quizAnswered=new Array(quizData.length).fill(false);
+  buildQuiz();
+}
+buildQuiz();
+</script>
+</body>
+</html>
